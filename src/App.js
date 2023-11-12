@@ -38,7 +38,7 @@ function calcLocations() {
   document.getElementById('errortext').hidden = true;
 
   let decimalLatIndex = latitude.indexOf('.');
-  let decimalLongIndex = latitude.indexOf('.');
+  let decimalLongIndex = longitude.indexOf('.');
 
   let lat = latitude.replace('.', '');
   let long = longitude.replace('.', '');
@@ -47,8 +47,8 @@ function calcLocations() {
   let longitudes = getAllValues(long);
 
   
-  latitudes = latitudes.filter(s => s.slice(0, 2) < 56 && s.slice(0,2) > 46).map(s => s.slice(0,decimalLatIndex) + "." + s.slice(decimalLatIndex));
-  longitudes = longitudes.filter(s => s.slice(0, 2) < 16 && s.slice(0,2) > 4).map(s => s.slice(0,decimalLongIndex) + "." + s.slice(decimalLongIndex));
+  latitudes = latitudes.map(s => s.slice(Math.min(getNumLeadingZeros(s), decimalLatIndex), decimalLatIndex) + "." + s.slice(decimalLatIndex)).filter(s => s < 55.4 && s > 47.270108);
+  longitudes = longitudes.map(s => s.slice(Math.min(getNumLeadingZeros(s), decimalLongIndex), decimalLongIndex) + "." + s.slice(decimalLongIndex)).filter(s => s < 15.033334 &&  s > 5.866666);
 
   
   let locations = [];
@@ -81,6 +81,16 @@ function calcLocations() {
   });
 }
 
+function getNumLeadingZeros(s) {
+  let num = 0;
+  if (s.length <= 0) return 0;
+
+  while (s.length > 0 && s.startsWith('0')) {
+    s = s.slice(1, s.length);
+    num++;
+  }
+  return num;
+}
 
 function getAllValues(coordInput) {
   let inputArray = coordInput.split("");
