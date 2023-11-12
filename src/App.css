@@ -12,8 +12,9 @@
   font-family: sans-serif;
 }
 
-.input {
-  justify-content: space-evenly;
+.inputs > * {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .maps-container {

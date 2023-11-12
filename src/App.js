@@ -70,9 +70,6 @@ function calcLocations() {
   latitudes = latitudes.filter(s => s.slice(0, 2) < 56 && s.slice(0,2) > 46).map(s => s.slice(0,2) + "." + s.slice(2));
   longitudes = longitudes.filter(s => s.slice(0, 2) < 16 && s.slice(0,2) > 4).map(s => s.slice(0,2) + "." + s.slice(2));
 
-  console.log(latitudes);
-  console.log(longitudes);
-
   let locations = [];
   for (let i = 0; i < latitudes.length; i++) {
     for (let j = 0; j < longitudes.length; j++) {
@@ -112,11 +109,11 @@ function App(){
   return (
     <div className="App">
       <div className="inputs"> 
-      Breitegrad: 
-      <input id='lat' onChange={handleLatChange}></input>
-      Längengrad:
-      <input id= 'long' onChange={handleLongChange}></input>
-      <button onClick={calcLocations}>Marker anzeigen</button>
+        <span>Breitengrad:</span>
+        <input className= 'input' id='lat' onChange={handleLatChange}></input>
+        <span>Längengrad:</span>
+        <input id= 'long' onChange={handleLongChange}></input>
+        <button onClick={calcLocations}>Marker anzeigen</button>
       </div>
       <div className="maps-container">
         <div className="leaflet-container">
