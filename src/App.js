@@ -18,13 +18,77 @@ function InitOriginalMap() {
 }
 
 
+
+function calcLocations() {
+  if (layerGroup) {
+    layerGroup.clearLayers();
+  }
+
+  if (!latitude.match('^[0-9_]+\\.[0-9_]+$')) {
+    console.log('invalid latitude');
+    document.getElementById('errortext').hidden = false;
+    return;
+  }
+
+  if (!longitude.match('^[0-9_]+\\.[0-9_]+$')) {
+    console.log('invalid longitude');
+    document.getElementById('errortext').hidden = false;
+    return;
+  }
+  document.getElementById('errortext').hidden = true;
+
+  let decimalLatIndex = latitude.indexOf('.');
+  let decimalLongIndex = latitude.indexOf('.');
+
+  let lat = latitude.replace('.', '');
+  let long = longitude.replace('.', '');
+
+  let latitudes = getAllValues(lat);
+  let longitudes = getAllValues(long);
+
+  
+  latitudes = latitudes.filter(s => s.slice(0, 2) < 56 && s.slice(0,2) > 46).map(s => s.slice(0,decimalLatIndex) + "." + s.slice(decimalLatIndex));
+  longitudes = longitudes.filter(s => s.slice(0, 2) < 16 && s.slice(0,2) > 4).map(s => s.slice(0,decimalLongIndex) + "." + s.slice(decimalLongIndex));
+
+  
+  let locations = [];
+  for (let i = 0; i < latitudes.length; i++) {
+    for (let j = 0; j < longitudes.length; j++) {
+      let latLng = new L.latLng(latitudes[i], longitudes[j]);
+      locations.push(latLng);
+    }
+  }
+
+  console.log('# of locations: ' + locations.length);
+  if (locations.length > 1e6) {
+    return;
+  }
+
+  var renderer = L.canvas();
+  locations.forEach(loc => {
+    layerGroup.addLayer(
+    new L.circleMarker(loc, {
+      fillColor: '#ff0000',
+      color: '#000000',
+      renderer: renderer,
+      weight: 1,
+    })
+    .bindPopup('[' + loc.lat + ', ' +loc.lng +']')
+    .on('mouseover', function(e){
+      this.openPopup();
+    }));
+    layerGroup.addTo(original_map);
+  });
+}
+
+
 function getAllValues(coordInput) {
   let inputArray = coordInput.split("");
   let mask = inputArray.map(val => val === '_' ? true : false);
 
   let res = [''];
   let i = 0;
-  while (res[0].length < 7) {
+  while (res[0].length < coordInput.length) {
     if (mask[i]) {
       let len = res.length;
       for (let j = 0; j < len; j++) {
@@ -45,58 +109,6 @@ function getAllValues(coordInput) {
   return res;
 }
 
-function calcLocations() {
-  if (layerGroup) {
-    layerGroup.clearLayers();
-  }
-
-  if (!latitude.match('[0-9._]{7}')) {
-    console.log('invalid latitude');
-    return;
-  }
-
-  if (!longitude.match('[0-9_]{2}\\.[0-9_]{5}')) {
-    console.log('invalid longitude');
-    return;
-  }
-
-  let lat = latitude.replace('.', '');
-  let long = longitude.replace('.', '');
-
-  let latitudes = getAllValues(lat);
-  let longitudes = getAllValues(long);
-
-  
-  latitudes = latitudes.filter(s => s.slice(0, 2) < 56 && s.slice(0,2) > 46).map(s => s.slice(0,2) + "." + s.slice(2));
-  longitudes = longitudes.filter(s => s.slice(0, 2) < 16 && s.slice(0,2) > 4).map(s => s.slice(0,2) + "." + s.slice(2));
-
-  let locations = [];
-  for (let i = 0; i < latitudes.length; i++) {
-    for (let j = 0; j < longitudes.length; j++) {
-      let latLng = new L.latLng(latitudes[i], longitudes[j]);
-      locations.push(latLng);
-    }
-  }
-
-  console.log('# of locations: ' + locations.length);
-
-  var renderer = L.canvas();
-  locations.forEach(loc => {
-    layerGroup.addLayer(
-    new L.circleMarker(loc, {
-      fillColor: '#ff0000',
-      color: '#000000',
-      renderer: renderer,
-      weight: 1,
-    })
-    .bindPopup('[' + loc.lat + ', ' +loc.lng +']')
-    .on('mouseover', function(e){
-      this.openPopup();
-    }));
-    layerGroup.addTo(original_map);
-  });
-}
-
 function handleLatChange(e) {
   latitude = e.target.value;
 }
@@ -114,6 +126,7 @@ function App(){
         <span>Längengrad:</span>
         <input id= 'long' onChange={handleLongChange}></input>
         <button onClick={calcLocations}>Marker anzeigen</button>
+        <span id='errortext' style={{color: '#ff0000'}} hidden={true}> Fehlerhafte Eingabe. </span>
       </div>
       <div className="maps-container">
         <div className="leaflet-container">
