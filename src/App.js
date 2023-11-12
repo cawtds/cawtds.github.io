@@ -20,9 +20,7 @@ function InitOriginalMap() {
 
 
 function calcLocations() {
-  if (layerGroup) {
-    layerGroup.clearLayers();
-  }
+  layerGroup.clearLayers();
 
   let resultText = document.getElementById('resulttext')
   if (!latitude.match('^[0-9_]+\\.[0-9_]+$')) {
@@ -66,17 +64,19 @@ function calcLocations() {
 
   console.log('# of locations: ' + locations.length);
 
-  resultText.hidden = false;
-  resultText.innerHTML = locations.length + " mögliche Orte gefunden"
-  resultText.style = 'color: green;';
-
-
-  if (locations.length > 1e6) {
-    return;
+  if (locations.length > 1e5) {
+    resultText.innerHTML = locations.length + " mögliche Orte gefunden. Es werden nur 100000 angezeigt."
+    resultText.style = 'color: orange;';
+  } else {
+    resultText.innerHTML = locations.length + " mögliche Orte gefunden"
+    resultText.style = 'color: green;';
   }
+  resultText.hidden = false;
+
 
   var renderer = L.canvas();
-  locations.forEach(loc => {
+  for (let i = 0; i < Math.min(locations.length, 100000); i++) {
+    let loc = locations[i];
     layerGroup.addLayer(
     new L.circleMarker(loc, {
       fillColor: '#ff0000',
@@ -89,7 +89,7 @@ function calcLocations() {
       this.openPopup();
     }));
     layerGroup.addTo(original_map);
-  });
+  }
 }
 
 function getNumLeadingZeros(s) {
