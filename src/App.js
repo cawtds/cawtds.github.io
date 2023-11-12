@@ -20,8 +20,10 @@ function InitOriginalMap() {
 
 
 function calcLocations() {
-  layerGroup.clearLayers();
+  const start = Date.now();
 
+  layerGroup.clearLayers();
+  
   let resultText = document.getElementById('resulttext')
   if (!latitude.match('^[0-9_]+\\.[0-9_]+$')) {
     console.log('invalid latitude');
@@ -49,6 +51,8 @@ function calcLocations() {
   let latitudes = getAllValues(lat);
   let longitudes = getAllValues(long);
 
+  const step1 = Date.now();
+  console.log('get lat/long: ' + (step1 - start) + "ms");
   
   latitudes = latitudes.map(s => s.slice(Math.min(getNumLeadingZeros(s), decimalLatIndex), decimalLatIndex) + "." + s.slice(decimalLatIndex)).filter(s => s < 55.4 && s > 47.270108);
   longitudes = longitudes.map(s => s.slice(Math.min(getNumLeadingZeros(s), decimalLongIndex), decimalLongIndex) + "." + s.slice(decimalLongIndex)).filter(s => s < 15.033334 &&  s > 5.866666);
@@ -61,6 +65,10 @@ function calcLocations() {
       locations.push(latLng);
     }
   }
+
+  
+  const step2 = Date.now();
+  console.log('get locations: ' + (step2 - step1) + "ms");
 
   console.log('# of locations: ' + locations.length);
 
@@ -90,6 +98,9 @@ function calcLocations() {
     }));
     layerGroup.addTo(original_map);
   }
+  
+  const step3 = Date.now();
+  console.log('add markers: ' + (step3 - step2) + "ms");
 }
 
 function getNumLeadingZeros(s) {
