@@ -24,18 +24,23 @@ function calcLocations() {
     layerGroup.clearLayers();
   }
 
+  let resultText = document.getElementById('resulttext')
   if (!latitude.match('^[0-9_]+\\.[0-9_]+$')) {
     console.log('invalid latitude');
-    document.getElementById('errortext').hidden = false;
+    resultText.hidden = false;
+    resultText.style = 'color: red;';
+    resultText.innerHTML = 'Invalider Breitengrad'
     return;
   }
 
   if (!longitude.match('^[0-9_]+\\.[0-9_]+$')) {
     console.log('invalid longitude');
-    document.getElementById('errortext').hidden = false;
+    resultText.hidden = false;
+    resultText.style = 'color: red;';
+    resultText.innerHTML = 'Invalider Längengrad'
     return;
   }
-  document.getElementById('errortext').hidden = true;
+
 
   let decimalLatIndex = latitude.indexOf('.');
   let decimalLongIndex = longitude.indexOf('.');
@@ -60,6 +65,12 @@ function calcLocations() {
   }
 
   console.log('# of locations: ' + locations.length);
+
+  resultText.hidden = false;
+  resultText.innerHTML = locations.length + " mögliche Orte gefunden"
+  resultText.style = 'color: green;';
+
+
   if (locations.length > 1e6) {
     return;
   }
@@ -136,7 +147,7 @@ function App(){
         <span>Längengrad:</span>
         <input id= 'long' onChange={handleLongChange}></input>
         <button onClick={calcLocations}>Marker anzeigen</button>
-        <span id='errortext' style={{color: '#ff0000'}} hidden={true}> Fehlerhafte Eingabe. </span>
+        <span id='resulttext' hidden={true}></span>
       </div>
       <div className="maps-container">
         <div className="leaflet-container">
