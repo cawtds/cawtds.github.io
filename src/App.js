@@ -5,8 +5,8 @@ import {MapContainer, TileLayer, useMap} from 'react-leaflet';
 
 const start_position = {lat:51.505, lng:-0.09};
 let original_map = null;
-let latitude = '50._7_30';
-let longitude = '__.1_203';
+let latitude = '50._766_';
+let longitude = '__.4_2_3';
 let layerGroup = null;
 
 function InitOriginalMap() {
