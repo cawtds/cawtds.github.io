@@ -1,7 +1,7 @@
 {
   "name": "antipodes",
   "version": "0.1.0",
-  "homepage": "https://cawtgit.github.io/",
+  "homepage": "https://cawtds.github.io/",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.13.0",
