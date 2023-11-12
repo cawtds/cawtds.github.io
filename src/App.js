@@ -5,24 +5,27 @@ import {MapContainer, TileLayer, useMap} from 'react-leaflet';
 
 const start_position = {lat:51.505, lng:-0.09};
 let original_map = null;
-let latitude = '';
-let longitude = '';
+let latitude = '50._7_30';
+let longitude = '__.1_203';
 let layerGroup = null;
 
 function InitOriginalMap() {
   original_map = useMap();
+  layerGroup = L.layerGroup([]);
+  document.getElementById('lat').setAttribute('value', latitude);
+  document.getElementById('long').setAttribute('value', longitude);
   return null;
 }
 
 
-function getAllValues(latitudeDigits) {
-  let latInputArray = latitudeDigits.split("");
-  let latMask = latInputArray.map(val => val === '_' ? true : false);
+function getAllValues(coordInput) {
+  let inputArray = coordInput.split("");
+  let mask = inputArray.map(val => val === '_' ? true : false);
 
   let res = [''];
   let i = 0;
   while (res[0].length < 7) {
-    if (latMask[i]) {
+    if (mask[i]) {
       let len = res.length;
       for (let j = 0; j < len; j++) {
         for (let k = 1; k < 10; k++) {
@@ -33,12 +36,11 @@ function getAllValues(latitudeDigits) {
       }
     } else {
       for (let k = 0; k < res.length; k++) {
-        res[k] += latInputArray[i];
+        res[k] += inputArray[i];
       }
     }
     i++;
   }
-
 
   return res;
 }
@@ -58,8 +60,8 @@ function calcLocations() {
     return;
   }
 
-  let lat = latitude
-  let long = longitude
+  let lat = latitude.replace('.', '');
+  let long = longitude.replace('.', '');
 
   let latitudes = getAllValues(lat);
   let longitudes = getAllValues(long);
@@ -79,23 +81,21 @@ function calcLocations() {
     }
   }
 
-  console.log('#location: ' + locations.length);
+  console.log('# of locations: ' + locations.length);
 
   var renderer = L.canvas();
-  layerGroup = layerGroup ? layerGroup : L.layerGroup([]);
   locations.forEach(loc => {
     layerGroup.addLayer(
     new L.circleMarker(loc, {
-    fillColor: '#ff0000',
-    color: '#000000',
-    attribution: 'border-color: #ff0000',
-    renderer: renderer,
-    opacity: 0.2,
-    weight: 1,
-    }).bindPopup('[' + loc.lat + ', ' +loc.lng +']').on('mouseover', function(e){
-      console.log('mouseover');
+      fillColor: '#ff0000',
+      color: '#000000',
+      renderer: renderer,
+      weight: 1,
+    })
+    .bindPopup('[' + loc.lat + ', ' +loc.lng +']')
+    .on('mouseover', function(e){
       this.openPopup();
-    }))
+    }));
     layerGroup.addTo(original_map);
   });
 }
@@ -113,9 +113,9 @@ function App(){
     <div className="App">
       <div className="inputs"> 
       Breitegrad: 
-      <input onChange={handleLatChange}></input>
+      <input id='lat' onChange={handleLatChange}></input>
       Längengrad:
-      <input onChange={handleLongChange}></input>
+      <input id= 'long' onChange={handleLongChange}></input>
       <button onClick={calcLocations}>Marker anzeigen</button>
       </div>
       <div className="maps-container">
